@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Etsy Profit Tracker</title>
+  </head>
+  <body>
+    <h1>Etsy Profit Tracker</h1>
+    <div id="totalProfit"></div>
+    <table id="app">
+      <thead>
+          <tr>
+            <th class="headerText"></th>
+            <th class="headerText">Name</th>
+            <th class="headerText">Etsy Price</th>
+            <th class="headerText">Printify Cost</th>
+            <th class="headerText">Profit Per Item</th>
+            <th class="headerText">Margin</th>
+            <th class="headerText">Sales</th>
+            <th class="headerText">Total Profit</th>
+          </tr>
+      </thead>
+      <tbody id="app-content"></tbody>
+      </table>
+    <script type="module" src="/src/main.js"></script>
+    <script>
+      document.querySelectorAll('#app th').forEach((header, columnIndex) => {
+        let ascending = true;
+
+        header.addEventListener('click', () => {
+          const table = header.closest('table');
+          const tbody = table.querySelector('tbody');
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+
+          // Remove sort indicators
+          table.querySelectorAll('th').forEach(th => {
+            th.textContent = th.textContent.replace(/[\u25B2\u25BC]/g, '').trim();
+          });
+
+          // Sort rows
+          rows.sort((a, b) => {
+            const aText = a.children[columnIndex].textContent.trim();
+            const bText = b.children[columnIndex].textContent.trim();
+
+            const aVal = parseCellValue(aText);
+            const bVal = parseCellValue(bText);
+
+            let comparison;
+
+            if (typeof aVal === 'number' && typeof bVal === 'number') {
+              comparison = aVal - bVal;
+            } else {
+              comparison = String(aVal).localeCompare(String(bVal));
+            }
+
+            return ascending ? comparison : -comparison;
+          });
+
+          // Re-append rows
+          rows.forEach(row => tbody.appendChild(row));
+
+          // Add indicator
+          header.textContent = header.textContent.trim() + (ascending ? ' ▲' : ' ▼');
+
+          ascending = !ascending;
+        });
+      });
+
+      // Parses cell values: "$1,200.00" → 1200.00, "12.5%" → 12.5, "Alice" → "alice"
+      function parseCellValue(text) {
+        const cleaned = text.replace(/[^0-9.\-]/g, '');
+        const num = parseFloat(cleaned);
+        if (!isNaN(num)) return num;
+        return text.toLowerCase(); // fallback to string
+      }
+    </script>
+  </body>
+</html>
