@@ -40,8 +40,8 @@ function getActive() {
 
  const historic = document.querySelector("#historic");
   historic.addEventListener("click", () => {
-  //show active products and profits
-  getActive();
+  //show historic products. Probably should pass in the unaltered CSV data to the product getter and then use that for this purpose. 
+  
   console.log('foo');
 });
 
